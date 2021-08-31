@@ -212,7 +212,9 @@ void main_main ()
                     int kk = k - bx_lo[2];
                     index += kk*nbox[0]*nbox[1];
 #endif
+		    BL_PROFILE_VAR("CopyToPt",CopyToPt);
                     inputs_torch[index][0] = phi_input(i, j, k, 0);
+		    BL_PROFILE_VAR_STOP(CopyToPt);
                 }
             }
         }
@@ -257,8 +259,10 @@ void main_main ()
                     int kk = k - bx_lo[2];
                     index += kk*nbox[0]*nbox[1];
 #endif
+		    BL_PROFILE_VAR("CopyFromPt",CopyFromPt);
                     phi_output(i, j, k, 0) = outputs_torch[index][0].item<double>();
                     phi_output(i, j, k, 1) = outputs_torch[index][1].item<double>();
+		    BL_PROFILE_VAR_STOP(CopyFromPt);
                 }
             }
         }
