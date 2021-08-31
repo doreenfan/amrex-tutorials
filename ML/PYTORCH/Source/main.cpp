@@ -167,11 +167,11 @@ void main_main ()
     BL_PROFILE_VAR_STOP(LoadPytorch);
     
 #ifdef AMREX_USE_CUDA
-    BL_PROFILE_VAR("LoadPytorch",LoadPytorchGpu);
+    BL_PROFILE_VAR("LoadPytorchGpu",LoadPytorchGpu);
     torch::Device device0(torch::kCUDA);
     module.to(device0);
     amrex::Print() << "Copying model to GPU." << std::endl;
-    BL_PROFILE_VAR_STOP(LoadPytorch);
+    BL_PROFILE_VAR_STOP(LoadPytorchGpu);
 #endif
 
     // **********************************
