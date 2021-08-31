@@ -238,6 +238,12 @@ void main_main ()
 
 	BL_PROFILE_VAR_STOP(Model);
 
+#ifdef AMREX_USE_CUDA
+	BL_PROFILE_VAR("CopyFromGpu",CopyFromGpu);
+        outputs_torch = outputs_torch.to(torch::kCPU);
+	BL_PROFILE_VAR_STOP(CopyFromGpu);
+#endif
+
 	BL_PROFILE_VAR("CopyFrom",CopyFrom);
 	
         // copy tensor to output multifab
