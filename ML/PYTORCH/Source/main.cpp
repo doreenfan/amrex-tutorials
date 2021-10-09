@@ -177,8 +177,13 @@ void main_main ()
     BL_PROFILE_VAR("Eval",Eval);
 
     // loop over boxes
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
     for ( MFIter mfi(phi_in); mfi.isValid(); ++mfi )
     {
+        BL_PROFILE_VAR("CopyTo",CopyTo);
+
         const Box& bx = mfi.validbox();
 
         const Array4<Real>& phi_input = phi_in.array(mfi);
@@ -214,6 +219,8 @@ void main_main ()
         // create torch tensor from array
         at::Tensor inputs_torch = torch::from_blob(auxPtr, {ncell, Nc_in}, tensoropt);
 
+	BL_PROFILE_VAR_STOP(CopyTo);
+
         // store the current time so we can later compute total eval time.
         Real eval_t_start = ParallelDescriptor::second();
 
@@ -231,6 +238,8 @@ void main_main ()
         auto outputs_torch_acc = outputs_torch.accessor<Real,2>();
 #endif
 
+	BL_PROFILE_VAR("CopyFrom",CopyFrom);
+
         // copy tensor to output multifab
         amrex::ParallelFor(bx, Nc_out, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept
         {
@@ -243,6 +252,8 @@ void main_main ()
 #endif
             phi_output(i, j, k, n) = outputs_torch_acc[index][n];
         });
+
+	BL_PROFILE_VAR_STOP(CopyFrom);
     }
 
     BL_PROFILE_VAR_STOP(Eval);
